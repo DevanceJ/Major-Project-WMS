@@ -1,6 +1,9 @@
 const express = require('express');
 const v1Router = express.Router();
 const Sensordata = require('../../models/sensordataModel');
+const lat = 28.52857959098862;
+const lon = 77.57862557301291;
+const query = lat + "," + lon;
 
 v1Router.post('/add', async (req, res) => {
     const { temperature, humidity, feels_like, wind_speed, wind_direction } = req.body;
@@ -43,6 +46,20 @@ v1Router.get('/latest', async (req, res) => {
     }
 }
 )
+
+
+v1Router.get('/geo', async (req, res) => {
+    try {
+        const geodata = await fetch(
+            `https://api.weatherapi.com/v1/current.json?key=${process.env.WEATHER_KEY}&q=${query}&aqi=no`
+        );
+        const data = await geodata.json();
+        res.json(data);
+    }
+    catch (err) {
+        res.send(err);
+    }
+})
 
 
 module.exports = v1Router;
